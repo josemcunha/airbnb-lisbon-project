@@ -1,0 +1,57 @@
+# Load libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(ggmap)
+
+# Load the datasets
+airbnb_lisbon_data = read_csv("~/Downloads/s3_files/lisbon/tomslee_airbnb_lisbon_1480_2017-07-27.csv")
+
+# Nr of Room Types in Lisbon
+nr_room_types = count(airbnb_lisbon_data, room_type)
+
+# Nr. of listings per neighborhood
+nr_listing_neighborhood = count(airbnb_lisbon_data, neighborhood)
+
+# Rename columns
+names(nr_listing_neighborhood)[2] = "total_listing"
+
+# Graph of nr. of listings per neighborhood
+ggplot(data = airbnb_lisbon_data) + geom_bar(mapping = aes(x = neighborhood))
+
+# Nr. of people each neighborhood can accomodate
+nr_people_neighborhood_accommodates = aggregate(airbnb_lisbon_data$accommodates, by=list(airbnb_lisbon_data$neighborhood), sum)
+
+# Rename columns
+names(nr_people_neighborhood_accommodates)[2] = "total_accommodates"
+
+# Average reviews per neighborhood
+## Filtering appartements with no reviews or score equals 0
+airbnb_lisbon_data_only_reviewed_listings = filter(airbnb_lisbon_data, reviews > 0, overall_satisfaction > 0)
+
+## Finding the average review score by neighborhood
+airbnb_lisbon_data_average_review_score_neighborhood = aggregate(airbnb_lisbon_data_only_reviewed_listings$overall_satisfaction, by=list(airbnb_lisbon_data_only_reviewed_listings$neighborhood), mean)
+
+## Rename columns
+names(airbnb_lisbon_data_average_review_score_neighborhood)[1] = "neighborhood"
+names(airbnb_lisbon_data_average_review_score_neighborhood)[2] = "average_review_score"
+
+## Graph of average review score per neighborhood
+ggplot(data = airbnb_lisbon_data_average_review_score_neighborhood) + geom_bar(mapping = aes(x = neighborhood, y = average_review_score), stat = "identity")
+
+# Map visualisation - Lisbon
+lisbon = get_map(location = "lisbon", zoom = 13, maptype = "roadmap", source = "google")
+
+ggmap(lisbon) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(lisbon) + geom_density(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+# Map visualisation - Campo de Ourique
+campo_de_ourique = get_map(location = "Campo de Ourique", zoom = 16, maptype = "roadmap", source = "google")
+
+ggmap(campo_de_ourique) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+# Map visualisation - Chiado
+chiado = get_map(location = "Chiado, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
+
+ggmap(chiado) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type)
