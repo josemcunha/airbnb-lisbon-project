@@ -162,7 +162,7 @@ ggmap(saldanha) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = l
 ggmap(saldanha) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
 
 ## Map visualisation - Marquês do Pombal
-marques_do_pombal = get_map(location = "Marquês do Pombal, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
+marques_do_pombal = get_map(location = "Parque Eduardo VII, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
 
 ggmap(marques_do_pombal) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
 
