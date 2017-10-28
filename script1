@@ -19,6 +19,26 @@ names(nr_listing_neighborhood)[2] = "total_listing"
 # Graph of nr. of listings per neighborhood
 ggplot(data = airbnb_lisbon_data) + geom_bar(mapping = aes(x = neighborhood))
 
+# Average price per room type
+average_price_room_type = aggregate(airbnb_lisbon_data$price, by=list(airbnb_lisbon_data$room_type), mean)
+
+# Rename columns
+names(average_price_room_type)[1] = "room_type"
+names(average_price_room_type)[2] = "average_price"
+
+# Graph of nr. of listings per neighborhood
+ggplot(data = average_price_room_type) + geom_bar(mapping = aes(x = room_type, y = average_price), stat = "identity")
+
+# Average price per neighborhood
+average_price_neighborhood = aggregate(airbnb_lisbon_data$price, by=list(airbnb_lisbon_data$neighborhood), mean)
+
+# Rename columns
+names(average_price_neighborhood)[1] = "neighborhood"
+names(average_price_neighborhood)[2] = "average_price"
+
+# Graph of nr. of listings per neighborhood
+ggplot(data = average_price_neighborhood) + geom_bar(mapping = aes(x = neighborhood, y = average_price), stat = "identity")
+
 # Nr. of people each neighborhood can accomodate
 nr_people_neighborhood_accommodates = aggregate(airbnb_lisbon_data$accommodates, by=list(airbnb_lisbon_data$neighborhood), sum)
 
@@ -30,28 +50,81 @@ names(nr_people_neighborhood_accommodates)[2] = "total_accommodates"
 airbnb_lisbon_data_only_reviewed_listings = filter(airbnb_lisbon_data, reviews > 0, overall_satisfaction > 0)
 
 ## Finding the average review score by neighborhood
-airbnb_lisbon_data_average_review_score_neighborhood = aggregate(airbnb_lisbon_data_only_reviewed_listings$overall_satisfaction, by=list(airbnb_lisbon_data_only_reviewed_listings$neighborhood), mean)
+average_review_score_neighborhood = aggregate(airbnb_lisbon_data_only_reviewed_listings$overall_satisfaction, by=list(airbnb_lisbon_data_only_reviewed_listings$neighborhood), mean)
 
 ## Rename columns
-names(airbnb_lisbon_data_average_review_score_neighborhood)[1] = "neighborhood"
-names(airbnb_lisbon_data_average_review_score_neighborhood)[2] = "average_review_score"
+names(average_review_score_neighborhood)[1] = "neighborhood"
+names(average_review_score_neighborhood)[2] = "average_review_score"
 
 ## Graph of average review score per neighborhood
-ggplot(data = airbnb_lisbon_data_average_review_score_neighborhood) + geom_bar(mapping = aes(x = neighborhood, y = average_review_score), stat = "identity")
+ggplot(data = average_review_score_neighborhood) + geom_bar(mapping = aes(x = neighborhood, y = average_review_score), stat = "identity")
 
 # Map visualisation - Lisbon
-lisbon = get_map(location = "lisbon", zoom = 13, maptype = "roadmap", source = "google")
+lisbon = get_map(location = "lisbon", zoom = 14, maptype = "roadmap", source = "google")
 
 ggmap(lisbon) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
 
-ggmap(lisbon) + geom_density(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+ggmap(lisbon) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=1, bins=5, position = "stack"))
 
 # Map visualisation - Campo de Ourique
 campo_de_ourique = get_map(location = "Campo de Ourique", zoom = 16, maptype = "roadmap", source = "google")
 
 ggmap(campo_de_ourique) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
 
+ggmap(campo_de_ourique) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
+
 # Map visualisation - Chiado
 chiado = get_map(location = "Chiado, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
 
-ggmap(chiado) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type)
+ggmap(chiado) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(chiado) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=1, bins=5, position = "stack"))
+
+# Map visualisation - Lapa
+lapa = get_map(location = "Lapa, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
+
+ggmap(lapa) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(lapa) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
+
+# Map visualisation - Alfama
+alfama = get_map(location = "Alfama, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
+
+ggmap(alfama) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(alfama) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
+
+# Map visualisation - Avenidas Novas
+avenidas_novas = get_map(location = "Avenidas Novas, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
+
+ggmap(avenidas_novas) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(avenidas_novas) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
+
+# Map visualisation - Baixa
+baixa = get_map(location = "Baixa, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
+
+ggmap(baixa) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(baixa) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
+
+# Map visualisation - Ajuda
+ajuda = get_map(location = "Ajuda, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
+
+ggmap(ajuda) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(ajuda) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
+
+# Map visualisation - Belem
+belem = get_map(location = "Mosteiro dos Jerónimos, Lisbon", zoom = 15, maptype = "roadmap", source = "google")
+
+ggmap(belem) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(belem) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
+
+# Map visualisation - Principe Real
+principe_real = get_map(location = "Jardim Fialho de Almeida, Lisbon", zoom = 17, maptype = "roadmap", source = "google")
+
+ggmap(principe_real) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(principe_real) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
