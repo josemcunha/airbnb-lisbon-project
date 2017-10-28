@@ -49,6 +49,19 @@ names(nr_people_neighborhood_accommodates)[2] = "total_accommodates"
 # Graph of nr. of listings per neighborhood
 ggplot(data = nr_people_neighborhood_accommodates) + geom_bar(mapping = aes(x = neighborhood, y = total_accommodates), stat = "identity")
 
+# Graph connecting people accommodate vs price
+qplot(x = accommodates, y = price, data = airbnb_lisbon_data, geom = c("smooth"))
+
+# Graph connecting bedrooms vs price
+qplot(x = bedrooms, y = price, data = airbnb_lisbon_data, geom = c("smooth"))
+
+# Graph connecting bedrooms vs price
+qplot(x = reviews, y = price, data = airbnb_lisbon_data, geom = c("smooth"))
+
+# Type of appartment in Santa Maria Maior vs price
+qplot(room_type, price, data = filter(airbnb_lisbon_data, neighborhood == "Santa Maria Maior"), geom= "boxplot", fill = price)
+
+
 # Average reviews per neighborhood
 ## Filtering appartements with no reviews or score equals 0
 airbnb_lisbon_data_only_reviewed_listings = filter(airbnb_lisbon_data, reviews > 0, overall_satisfaction > 0)
