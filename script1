@@ -128,3 +128,10 @@ principe_real = get_map(location = "Jardim Fialho de Almeida, Lisbon", zoom = 17
 ggmap(principe_real) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
 
 ggmap(principe_real) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
+
+# Map visualisation - Intendente
+intendente = get_map(location = "Largo do Intendente Pina Manique, Lisbon", zoom = 16, maptype = "roadmap", source = "google")
+
+ggmap(intendente) + geom_point(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, colour = room_type))
+
+ggmap(intendente) + stat_density2d(data = airbnb_lisbon_data, aes(x = longitude, y = latitude, fill=..level.., alpha=..level.., geom="polygon", size=0.1, bins=5, position = "stack"))
