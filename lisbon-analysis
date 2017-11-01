@@ -8,7 +8,8 @@ library(ggmap)
 airbnb_lisbon_data = read_csv("~/Downloads/s3_files/lisbon/tomslee_airbnb_lisbon_1480_2017-07-27.csv")
 
 # Filtering noise from dataset (Hotels and Hostels)
-airbnb_lisbon_data = filter(airbnb_lisbon_data,!grepl("hostel|HOSTEL|Hostel|hotel|HOTEL|Hotel", name))
+airbnb_lisbon_data = filter(airbnb_lisbon_data,
+                            !grepl("hostel|HOSTEL|Hostel|hotel|HOTEL|Hotel", name))
 
 # Creating a dataset to remove price outliers
 airbnb_lisbon_data_price500 = filter(airbnb_lisbon_data, price < 500)
@@ -64,17 +65,17 @@ names(average_price_neighborhood)[2] = "average_price"
 
 ## Reordering according most expensive and cheapest accommodating neighborhood
 
-average_price_neighborhood = average_price_neighborhood[order(-average_price_neighborhood$average_price), ]
+average_price_neighborhood = average_price_neighborhood[order(-average_price_neighborhood$average_price),]
 
-most_expensive_neighborhoods = average_price_neighborhood[1:7, ]
+most_expensive_neighborhoods = average_price_neighborhood[1:7,]
 
-average_price_neighborhood = average_price_neighborhood[order(average_price_neighborhood$average_price), ]
+average_price_neighborhood = average_price_neighborhood[order(average_price_neighborhood$average_price),]
 
-cheapest_neighborhoods = average_price_neighborhood[1:7, ]
+cheapest_neighborhoods = average_price_neighborhood[1:7,]
 
 ## Graph of most expensive neighborhood
 ggplot(data = most_expensive_neighborhoods) + geom_bar(
-  mapping = aes(x = reorder(neighborhood, -average_price), y = average_price),
+  mapping = aes(x = reorder(neighborhood,-average_price), y = average_price),
   stat = "identity",
   fill = "red"
 ) + ggtitle("Most expensive neighborhoods in Lisbon") + xlab("Neighborhood") + ylab("Average Price") + theme(text = element_text(size = 10),
@@ -82,7 +83,7 @@ ggplot(data = most_expensive_neighborhoods) + geom_bar(
 
 ## Graph of cheapest neighborhood
 ggplot(data = cheapest_neighborhoods) + geom_bar(
-  mapping = aes(x = reorder(neighborhood, +average_price), y = average_price),
+  mapping = aes(x = reorder(neighborhood,+average_price), y = average_price),
   stat = "identity",
   fill = "red"
 ) + ggtitle("Cheapest neighborhoods in Lisbon") + xlab("Neighborhood") + ylab("Average Price") + theme(text = element_text(size = 10),
@@ -98,13 +99,13 @@ names(nr_people_neighborhood_accommodates)[1] = "neighborhood"
 names(nr_people_neighborhood_accommodates)[2] = "total_accommodates"
 
 ## Order per highest and lowest accommodating neighborhood
-nr_people_neighborhood_accommodates = nr_people_neighborhood_accommodates[order(-nr_people_neighborhood_accommodates$total_accommodates), ]
+nr_people_neighborhood_accommodates = nr_people_neighborhood_accommodates[order(-nr_people_neighborhood_accommodates$total_accommodates),]
 
-highest_accommodating_neighborhood = nr_people_neighborhood_accommodates[1:7, ]
+highest_accommodating_neighborhood = nr_people_neighborhood_accommodates[1:7,]
 
-nr_people_neighborhood_accommodates = nr_people_neighborhood_accommodates[order(nr_people_neighborhood_accommodates$total_accommodates), ]
+nr_people_neighborhood_accommodates = nr_people_neighborhood_accommodates[order(nr_people_neighborhood_accommodates$total_accommodates),]
 
-lowest_accommodating_neighborhood = nr_people_neighborhood_accommodates[1:7, ]
+lowest_accommodating_neighborhood = nr_people_neighborhood_accommodates[1:7,]
 
 ## Graph of nr. of people accommodates per neighborhood
 ggplot(data = nr_people_neighborhood_accommodates) + geom_bar(
@@ -116,7 +117,7 @@ ggplot(data = nr_people_neighborhood_accommodates) + geom_bar(
 
 ggplot(data = highest_accommodating_neighborhood) + geom_bar(
   mapping = aes(
-    x = reorder(neighborhood, -total_accommodates),
+    x = reorder(neighborhood,-total_accommodates),
     y = total_accommodates
   ),
   stat = "identity",
@@ -126,7 +127,7 @@ ggplot(data = highest_accommodating_neighborhood) + geom_bar(
 
 ggplot(data = lowest_accommodating_neighborhood) + geom_bar(
   mapping = aes(
-    x = reorder(neighborhood, +total_accommodates),
+    x = reorder(neighborhood,+total_accommodates),
     y = total_accommodates
   ),
   stat = "identity",
@@ -134,13 +135,34 @@ ggplot(data = lowest_accommodating_neighborhood) + geom_bar(
 ) + ggtitle("Neighborhoods with the lowest capacity") + xlab("Neighborhood") + ylab("Total Capacity") + theme(text = element_text(size = 10),
                                                                                                               axis.text.x = element_text(angle = 35, hjust = 1))
 # Nr. of listings per host
-nr_listing_host = aggregate(airbnb_lisbon_data$accommodates,
-                            by = list(airbnb_lisbon_data$host_id),
-                            sum)
 
-aggregate(nr_listing_host, by = list(nr_listing_host$x), mean)
+## Data wrangling
 
-#POR RESOLVER!!!
+nr_listing_host = data.frame(as.numeric(airbnb_lisbon_data$room_id), as.numeric(airbnb_lisbon_data$host_id))
+
+## Rename columns
+names(nr_listing_host)[1] = "room_id"
+names(nr_listing_host)[2] = "host_id"
+
+nr_listing_host = count(nr_listing_host, host_id)
+
+nr_listing_host = rle(sort(nr_listing_host$n))
+
+## Creating the data frame
+
+nr_listing_host = data.frame(number = nr_listing_host$values, n = nr_listing_host$lengths)
+
+## Rename columns
+names(nr_listing_host)[1] = "nr_listings_airbnb"
+names(nr_listing_host)[2] = "total_number_hosts"
+
+## Plot graph
+
+ggplot(data = nr_listing_host) + geom_bar(
+  mapping = aes(x = nr_listings_airbnb, y = total_number_hosts),
+  stat = "identity",
+  fill = "red"
+) + ggtitle("How many appartments each host has?") + xlab("Nr. of Airbnb listings per host") + ylab("Nr of Hosts") + xlim(0, 10)
 
 # Graph connecting people accommodate vs price
 qplot(
@@ -188,7 +210,7 @@ names(average_review_score_neighborhood)[2] = "average_review_score"
 ## Graph of average review score per neighborhood
 ggplot(data = average_review_score_neighborhood) + geom_bar(
   mapping = aes(
-    x = reorder(neighborhood, -average_review_score),
+    x = reorder(neighborhood,-average_review_score),
     y = average_review_score
   ),
   stat = "identity",
