@@ -4,4 +4,4 @@ I ran an analysis to the supply of Airbnb in Lisbon with the final goal of learn
 
 The analysis was done exclusively with R.
 
-Main conclusions can be found on my Medium account.
+Main conclusions can be found on here [https://medium.com/@zemariacunha/airbnb-is-lisbons-largest-hotel-fc00a0c5ff7b].
